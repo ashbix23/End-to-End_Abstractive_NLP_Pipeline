@@ -1,0 +1,22 @@
+# Ignore caches, data, models, and system files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+# Ignore notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore model and data folders
+outputs/
+data/
+*.pt
+*.bin
+*.safetensors
+*.h5
+*.ckpt
+
+# Hugging Face & cache
+.cache/
+
