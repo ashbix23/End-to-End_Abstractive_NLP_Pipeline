@@ -9,7 +9,7 @@
 
 ---
 
-## Project Highlights & MLOps Value
+## Project Highlights
 
 This project goes beyond a simple fine-tuning task, showcasing expertise in building reproducible, production-ready NLP systems:
 
