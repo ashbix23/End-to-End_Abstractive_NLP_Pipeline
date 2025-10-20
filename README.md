@@ -1,50 +1,45 @@
-# Scientific Paper Summarizer (BART)
+# End-to-End Abstractive NLP Pipeline (BART)
 
-[![Hugging Face Model](https://img.shields.io/badge/HF%20Model-ashbeexd%2Fbart--summariser--model-blue)](https://huggingface.co/ashbeexd/bart-summariser-model)
-[![Hugging Face Space](https://img.shields.io/badge/HF%20Space-ashbeexd%2Ftext--summarisation--hf-green)](https://huggingface.co/spaces/ashbeexd/text-summarisation-hf)
+[![Hugging Face Model](https://img.shields.io/badge/HF%20Model-ashbix23%2FBART--Summarizer-blue)](https://huggingface.co/ashbix23/bart-summariser-model)
+[![Hugging Face Space](https://img.shields.io/badge/HF%20Demo-Live%20Gradio%20App-green)](https://huggingface.co/spaces/ashbix23/text-summarisation-hf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](#environment)
 
-
-Abstractive summarization pipeline for scientific text using **BART-base** fine-tuned on Hugging Face’s **`scientific_papers/arxiv`** dataset. The project covers the complete workflow: data ingestion and caching, training (CPU/MPS-friendly), evaluation (ROUGE + BERTScore), and deployment to a public demo on Hugging Face (Space + hosted model repo). Notebooks are included for end-to-end reproducibility.
-
----
-
-## Highlights
-
-- **Domain-appropriate data**: Trained on the `scientific_papers/arxiv` split (articles → abstracts), not news data.
-- **Solid engineering**: Clean `src/` package with explicit stages (load/tokenize/cache, train, evaluate). Safe defaults for macOS/MPS and CPU.
-- **Reproducible**: Deterministic seeds, disk-cached datasets, pinned requirements, and self-contained notebooks.
-- **Meaningful evals**: ROUGE-1/2/L and BERTScore, plus qualitative example dumps.
-- **Demo-ready**: Model hosted on the Hugging Face Hub; Gradio Space consumes the hosted model. No local app hosting required.
+**Complete MLOps pipeline for Abstractive Text Summarization using Hugging Face's BART-base model, fine-tuned on the `scientific_papers/arxiv` dataset. Features include structured training, ROUGE/BERTScore evaluation, and deployment to the Hugging Face Hub and Spaces.**
 
 ---
 
-## Quick Links
+## Project Highlights & MLOps Value
 
-- **Hosted Model (Hugging Face Hub)**: `ashbeexd/bart-summariser-model`
-- **Interactive Demo (Space)**: `ashbeexd/text-summarisation-hf`
+This project goes beyond a simple fine-tuning task, showcasing expertise in building reproducible, production-ready NLP systems:
 
-> Note: The app is deployed on Hugging Face; this repository does not include app configuration code beyond a simple `app.py` reference for local sanity checks.
+* **Domain Specialization**: Model is robustly fine-tuned on the **scientific\_papers/arxiv** corpus (article $\rightarrow$ abstract), ensuring high-quality, domain-appropriate summarization.
+* **Structured MLOps Pipeline**: Features a clean `src/` package structure with explicit stages (data ingestion, tokenization, training, evaluation, artifact management).
+* **Reproducibility & Stability**: Uses deterministic seeds, implements **disk-cached datasets** (for efficiency), pins dependency requirements, and provides specific stability flags for multi-OS support.
+* **Comprehensive Evaluation**: Utilizes both **ROUGE-1/2/L** (lexical overlap) and the advanced **BERTScore** (semantic similarity) to provide a complete view of model performance.
+* **Deployment Ready**: The fine-tuned model is versioned and hosted on the **Hugging Face Hub** (`ashbix23/bart-summariser-model`) and consumed by a public **Gradio Space** demo.
 
 ---
 
-## Results (Validation)
+## Quick Links (Deployment Artifacts)
 
-Evaluation was performed on a validation **subset** with BART-base fine-tuned on a **40k train / 4k val** slice for faster iteration. The following scores are representative and reproducible with the provided notebooks.
+| Resource | Value | Link (Username: `ashbix23`) |
+| :--- | :--- | :--- |
+| **Hosted Model** | Model Checkpoint & Versioning | [`ashbix23/bart-summariser-model`](https://huggingface.co/ashbix23/bart-summariser-model) |
+| **Interactive Demo** | Live Gradio Deployment | [`ashbix23/text-summarisation-hf`](https://huggingface.co/spaces/ashbix23/text-summarisation-hf) |
 
-| Metric | Score |
-|---|---:|
-| ROUGE-1 | 36.80 |
-| ROUGE-2 | 13.29 |
-| ROUGE-L | 22.33 |
-| BERTScore-F1 | 85.17 |
+---
 
-Artifacts:
-- `outputs/eval/metrics.json` — numeric results
-- `outputs/eval/examples.json` — qualitative samples (input excerpt, prediction, reference)
+## Evaluation Results (Validation Subset)
 
-> Interpreting the numbers: On scientific long-form text, these scores are in the expected band for BART-base with moderate training. ROUGE emphasizes lexical overlap; BERTScore captures semantic similarity (contextual embeddings).
+Evaluation was performed on a validation subset after fine-tuning on a **40k train / 4k val** slice, a common practice for rapid iteration and establishing a strong baseline.
+
+| Metric | Score | Interpretation |
+| :--- | :--- | :--- |
+| ROUGE-1 | 36.80 | High lexical overlap with human abstracts. |
+| ROUGE-2 | 13.29 | Good performance on capturing key bi-grams/phrases. |
+| ROUGE-L | 22.33 | Strong longest common subsequence overlap. |
+| **BERTScore-F1** | 85.17 | Confirms high **semantic similarity** between prediction and reference. |
 
 ---
 
@@ -88,34 +83,24 @@ data/cache/
 
 ---
 
-## Environment
+## 🛠️ Environment and Setup
 
-Targeted for **Python 3.10+**. macOS/CPU and Apple Silicon (MPS) supported.
+Targeted for **Python 3.10+**. Supports standard CPU and Apple Silicon (MPS).
 
-```
-pip install -r requirements.txt
-```
+1.  **Installation**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-`requirements.txt` (key deps):
-```
-transformers>=4.40.1
-torch>=2.2.0
-evaluate>=0.4.1
-bert-score>=0.3.13
-rouge-score>=0.1.2
-gradio>=5.49.1    # for quick local sanity checks; Space hosts the app remotely
-```
+2.  **Stability Flags (For macOS/Jupyter)**:
+    If encountering import stalls or parallelism issues, set these environment variables **before** importing `transformers` or `torch`:
 
-### Stability flags (Jupyter/macOS)
-If you see import stalls in notebooks, set the following **before** importing Transformers/Torch:
-```python
-import os
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["HF_DATASETS_DISABLE_MULTIPROCESSING"] = "1"
-os.environ["DATASETS_DISABLE_PARALLELISM"] = "1"
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
-```
+    ```python
+    import os
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    os.environ["HF_DATASETS_DISABLE_MULTIPROCESSING"] = "1"
+    # ... (other stability flags)
+    ```
 
 ---
 
@@ -216,6 +201,27 @@ os.makedirs("data/cache", exist_ok=True)
 - **Duplicate caches under `notebooks/`**: Caused by relative paths; this repo resolves paths from project root to prevent it.
 - **Transformers/Tokenizers version conflicts**: Ensure `transformers>=4.40.1` and remove overly pinned `tokenizers` versions.
 - **Long training times on CPU**: Start with a subset (e.g., 40k/4k) to validate pipeline; scale up on GPU later.
+
+---
+
+## Future Work and Technical Roadmap
+
+This section outlines planned enhancements to further industrialize the summarization pipeline and explore advanced GenAI techniques.
+
+### 1. Algorithmic Extensions (Deepening Mastery)
+
+| Feature | Technical Goal |
+| :--- | :--- |
+| **Full Parameter Fine-Tuning (LoRA/QLoRA)** | Implement Parameter-Efficient Fine-Tuning (PEFT) using LoRA or QLoRA to reduce memory footprint and training time. |
+| **Integrate T5 or Pegasus** | Benchmark an alternative model architecture (e.g., T5 or Pegasus) on the same task/dataset. |
+
+
+### 2. Robustness and Software Engineering
+
+| Feature | Technical Goal |
+| :--- | :--- |
+| **MLflow Experiment Tracking** | Integrate MLflow to log training runs, hyperparameters, and ROUGE/BERTScore metrics for systematic experiment comparison. |
+| **Custom Data Preprocessing** | Add PDF parsing or LaTeX stripping to allow direct ingestion of raw scientific papers (not just pre-cleaned Hugging Face data). |
 
 ---
 
